@@ -2,8 +2,8 @@
 
 ### TODO:
 
-- [] rejoin when kicked
-- [] restart setup when you die and stuff.
-- [] player greater.
-- [] http server for communicating accross multiple accounts.
-- [] maybe even a database lol.
+- [ ] rejoin when kicked
+- [ ] restart setup when you die and stuff.
+- [ ] player greater.
+- [ ] http server for communicating accross multiple accounts.
+- [ ] maybe even a database lol.
