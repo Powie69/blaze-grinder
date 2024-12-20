@@ -2,14 +2,15 @@ const mineflayer = require('mineflayer')
 require('dotenv').config()
 
 const bot = mineflayer.createBot({
-	host: 'localhost',
-	port: 25565,
-	username: 'Powhax',
+	host: process.env.HOST,
+	port: process.env.PORT,
+	username: process.env.MC_NAME
 })
 
 bot.once('spawn', () => {
 	console.log('hello');
 	bot.chat("heelo world!")
+	bot.chat(`/login ${process.env.LOGIN_PASSWORD}`)
 })
 
 let ticks, hits = 0;
