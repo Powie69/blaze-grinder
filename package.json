@@ -1,0 +1,16 @@
+{
+  "name": "blazebot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "s": "node index.js"
+  },
+  "author": "Powie",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "mineflayer": "^4.23.0"
+  }
+}
