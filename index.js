@@ -21,7 +21,7 @@ radarPlugin(bot, {
 	port:2510
 });
 
-let isAttacking = false, isSelling = false; // Flag to prevent overlapping calls
+let isAttacking = false;
 let spawned = false;
 let killed = 0;
 let ticks = 0
@@ -45,30 +45,33 @@ async function sellRods() {
 		console.log('blaze not found!');
 		return
 	};
-	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,994).slot - 35) // blaze
-	console.log(`d: ${bot.inventory.findItemRange(36,44,994).slot - 35}`);
-	console.log(`blaze slot: ${bot.inventory.findItemRange(36,44,994).slot - 35}`);
+	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,994).slot - 36) // blaze
+	console.log(`blaze slot: ${bot.inventory.findItemRange(36,44,994).slot - 36}`);
 	
 	await bot.waitForTicks(4)
-	// bot.chat('/sell handall')
-	bot.chat('sold!')
+	bot.chat('/sell handall')
+	console.log('sold!');
 	
 	await bot.waitForTicks(4)
 	if (!bot.inventory.findItemRange(36,44,843)) {
 		console.log('sword not found!');
 		return
 	};
-	console.log(`sword: ${bot.inventory.findItemRange(36,44,843).slot - 35}`);
-	console.log(`sword slot: ${bot.inventory.findItemRange(36,44,843).slot - 35}`);
-	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 35) // sword
+	console.log(`sword slot: ${bot.inventory.findItemRange(36,44,843).slot - 36}`);
+	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
 	
 	// console.log(`blaze rod ${ bot.inventory.findItemRange(36,44,994).slot - 35}`);
-	isSelling = false;
-	
 }
 
 async function setup() {
-	
+	bot.chat(`/home ${process.env.MC_HOMENAME}`)
+	bot.chat('/heal')
+	if (!bot.inventory.findItemRange(36,44,843)) {
+		console.log('sword not found!');
+		return
+	};
+	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
+	bot.chat('/fix')
 }
 
 bot.once('spawn', () => {
@@ -76,6 +79,7 @@ bot.once('spawn', () => {
 	bot.chat(`/login ${process.env.LOGIN_PASSWORD}`)
 	bot.webInventory.start();
 	bot.mcData = require('minecraft-data')(bot.version)
+	setup()
 	spawned = true;
 })
 
@@ -96,7 +100,8 @@ bot.on('entityDead', (entity) => {
 
 bot.on('physicTick', async () => {
 	console.log(ticks);
-	if (ticks < 12 || isAttacking) {
+	if (isAttacking) return;
+	if (ticks < 12) {
 		ticks++
 		return
 	}
@@ -104,9 +109,10 @@ bot.on('physicTick', async () => {
 	target = bot.nearestEntity(entity => entity.name === 'blaze' && bot.entity.position.distanceTo(entity.position) <= 4.5 && entity.id !== dead)
 	attackBlaze(target)
 	ticks = 0;
-	if (hits % 5 === 0) {
+	if (hits % process.env.MC_INCREMENT === 0 && hits !== 0) {
 		// bot.chat('/heal')
 		await sellRods()
+		setup() // we might die or get trolled or admins
 		console.log("/healed");
 	}
 	console.log(`hits: ${hits}`);
