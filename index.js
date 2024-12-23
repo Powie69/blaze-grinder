@@ -21,25 +21,61 @@ radarPlugin(bot, {
 	port:2510
 });
 
+let isAttacking = false, isSelling = false; // Flag to prevent overlapping calls
 let spawned = false;
 let killed = 0;
 let ticks = 0
 let hits = 0;
 let target = undefined, dead = undefined;
 
-function attackBlaze(entity) {
+async function attackBlaze(entity) {
 	if (!entity) return;
-	// console.log(entity);
-	bot.lookAt(entity.position.offset(0, 0.8, 0),true)
-	if (bot.entityAtCursor(4.5) === null && bot.entity.position.distanceTo(entity.position) >= 1) return; // dont attack if its behind block
-	bot.attack(entity)
-	console.log('hit!');
+	isAttacking = true;
+
+	await bot.lookAt(entity.position.offset(0, 0.8, 0), true);
+	if (bot.entityAtCursor(4.5) === null && bot.entity.position.distanceTo(entity.position) >= 1) {isAttacking = false; return};
+
+	bot.attack(entity);
+	hits++
+	isAttacking = false;
+}
+
+async function sellRods() {
+	if (!bot.inventory.findItemRange(36,44,994)) {
+		console.log('blaze not found!');
+		return
+	};
+	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,994).slot - 35) // blaze
+	console.log(`d: ${bot.inventory.findItemRange(36,44,994).slot - 35}`);
+	console.log(`blaze slot: ${bot.inventory.findItemRange(36,44,994).slot - 35}`);
+	
+	await bot.waitForTicks(4)
+	// bot.chat('/sell handall')
+	bot.chat('sold!')
+	
+	await bot.waitForTicks(4)
+	if (!bot.inventory.findItemRange(36,44,843)) {
+		console.log('sword not found!');
+		return
+	};
+	console.log(`sword: ${bot.inventory.findItemRange(36,44,843).slot - 35}`);
+	console.log(`sword slot: ${bot.inventory.findItemRange(36,44,843).slot - 35}`);
+	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 35) // sword
+	
+	// console.log(`blaze rod ${ bot.inventory.findItemRange(36,44,994).slot - 35}`);
+	isSelling = false;
+	
+}
+
+async function setup() {
+	
 }
 
 bot.once('spawn', () => {
 	console.log('hello');
 	bot.chat(`/login ${process.env.LOGIN_PASSWORD}`)
 	bot.webInventory.start();
+	bot.mcData = require('minecraft-data')(bot.version)
 	spawned = true;
 })
 
@@ -58,9 +94,9 @@ bot.on('entityDead', (entity) => {
 	target = null;
 })
 
-bot.on('physicTick', () => {
+bot.on('physicTick', async () => {
 	console.log(ticks);
-	if (ticks < 12) {
+	if (ticks < 12 || isAttacking) {
 		ticks++
 		return
 	}
@@ -68,11 +104,11 @@ bot.on('physicTick', () => {
 	target = bot.nearestEntity(entity => entity.name === 'blaze' && bot.entity.position.distanceTo(entity.position) <= 4.5 && entity.id !== dead)
 	attackBlaze(target)
 	ticks = 0;
-	if (hits % 1000 === 0) {
-		bot.chat('/heal')
+	if (hits % 5 === 0) {
+		// bot.chat('/heal')
+		await sellRods()
 		console.log("/healed");
 	}
-	hits++
 	console.log(`hits: ${hits}`);
 })
 

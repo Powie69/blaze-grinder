@@ -13,6 +13,7 @@
   "dependencies": {
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
+    "minecraft-data": "^3.80.0",
     "mineflayer": "^4.23.0",
     "mineflayer-radar": "^0.0.2",
     "mineflayer-web-inventory": "^1.8.5"
