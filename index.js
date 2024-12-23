@@ -1,5 +1,6 @@
 const mineflayer = require('mineflayer')
 const inventoryViewer = require('mineflayer-web-inventory')
+const radarPlugin = require('mineflayer-radar')(mineflayer);
 const messages = require('./js/messages.js')
 require('dotenv').config({path: `.env.${process.env.NODE_ENV || 'development'}`})
 
@@ -16,6 +17,9 @@ inventoryViewer(bot, {
 	startOnLoad: false,
 })
 
+radarPlugin(bot, {
+	port:2510
+});
 
 let spawned = false;
 let killed = 0;
@@ -23,20 +27,9 @@ let ticks = 0
 let hits = 0;
 let target = undefined, dead = undefined;
 
-// function lookAtBlaze(targetPosition) {
-// 	const dx = targetPosition.x - bot.entity.position.x;
-// 	const dy = targetPosition.y - bot.entity.position.y;
-// 	const dz = targetPosition.z - bot.entity.position.z;
-  
-// 	bot.entity.yaw  = Math.atan2(-dx, dz);
-// 	bot.entity.pitch = Math.atan2(dy, Math.sqrt(dx * dx + dz * dz));
-// }
-
 function attackBlaze(entity) {
 	if (!entity) return;
 	// console.log(entity);
-	// lookAtBlaze(entity.position.offset(0, 0.8, 0))
-	// if (entity.id !== target.id) return;
 	bot.lookAt(entity.position.offset(0, 0.8, 0),true)
 	if (bot.entityAtCursor(4.5) === null && bot.entity.position.distanceTo(entity.position) >= 1) return; // dont attack if its behind block
 	bot.attack(entity)
@@ -71,8 +64,8 @@ bot.on('physicTick', () => {
 		ticks++
 		return
 	}
+
 	target = bot.nearestEntity(entity => entity.name === 'blaze' && bot.entity.position.distanceTo(entity.position) <= 4.5 && entity.id !== dead)
-	// console.log(target.health);
 	attackBlaze(target)
 	ticks = 0;
 	if (hits % 1000 === 0) {

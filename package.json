@@ -14,6 +14,7 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "mineflayer": "^4.23.0",
+    "mineflayer-radar": "^0.0.2",
     "mineflayer-web-inventory": "^1.8.5"
   }
 }
