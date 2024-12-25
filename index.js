@@ -9,7 +9,7 @@ let isAttacking = false, spawned = false;
 let killed=0,ticks=0,hits=0;
 let target = undefined, dead = undefined;
 
-async function attackBlaze(entity) {
+async function attackBlaze(bot ,entity) {
 	if (!entity) return;
 	isAttacking = true;
 
@@ -21,7 +21,7 @@ async function attackBlaze(entity) {
 	isAttacking = false;
 }
 
-async function sellRods() {
+async function sellRods(bot) {
 	if (!bot.inventory.findItemRange(36,44,994)) {
 		console.log('blaze not found!');
 		return
@@ -42,7 +42,7 @@ async function sellRods() {
 	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
 }
 
-async function setup() {
+async function setup(bot) {
 	bot.chat(`/home ${process.env.MC_HOMENAME}`)
 	bot.chat('/heal')
 	if (!bot.inventory.findItemRange(36,44,843)) {
@@ -82,7 +82,7 @@ bot.once('spawn', () => {
 	console.log('hello');
 	bot.chat(`/login ${process.env.LOGIN_PASSWORD}`)
 	bot.mcData = require('minecraft-data')(bot.version)
-	setup()
+	setup(bot)
 	spawned = true;
 })
 
@@ -111,10 +111,10 @@ bot.on('physicTick', async () => {
 	}
 
 	target = bot.nearestEntity(entity => entity.name === 'blaze' && bot.entity.position.distanceTo(entity.position) <= 4.5 && entity.id !== dead)
-	attackBlaze(target)
+	attackBlaze(bot, target)
 	ticks = 0;
 	if (hits % process.env.MC_INCREMENT === 0 && hits !== 0) {
-		await sellRods()
+		await sellRods(bot)
 		setup() // we might die or get trolled or admins
 		console.log("/healed");
 	}
