@@ -5,23 +5,6 @@ const commands = require('./js/commands.js');
 const messages = require('./js/messages.js');
 require('dotenv').config({path: `.env.${process.env.NODE_ENV || 'development'}`})
 
-const bot = mineflayer.createBot({
-	host: process.env.HOST,
-	port: process.env.PORT,
-	version: process.env.MC_VERSION,
-	username: process.env.MC_NAME,
-	brand: process.env.MC_BRAND
-})
-
-inventoryViewer(bot, {
-	port: 2500,
-	startOnLoad: false,
-})
-
-radarPlugin(bot, {
-	port:2510
-});
-
 let isAttacking = false, spawned = false;
 let killed=0,ticks=0,hits=0;
 let target = undefined, dead = undefined;
@@ -70,13 +53,34 @@ async function setup() {
 	bot.chat('/fix')
 }
 async function startBot() { //! i dont wanna indent ok?
+	
+const bot = mineflayer.createBot({
+	host: process.env.HOST,
+	port: process.env.PORT,
+	version: process.env.MC_VERSION,
+	username: process.env.MC_NAME,
+	brand: process.env.MC_BRAND
+})
+	
+try {
+	// inventoryViewer(bot, {
+	// 	port: 2500,
+	// 	startOnLoad: false,
+	// })
+	radarPlugin(bot, {
+		port:2510
+	});
+} catch (err) {
+	console.log(err);	
+}
+
+console.log();
 
 bot.on('end', () => {setTimeout(() => {startBot()}, process.env.RESTART_DELAY);})
 
 bot.once('spawn', () => {
 	console.log('hello');
 	bot.chat(`/login ${process.env.LOGIN_PASSWORD}`)
-	bot.webInventory.start();
 	bot.mcData = require('minecraft-data')(bot.version)
 	setup()
 	spawned = true;
@@ -119,6 +123,8 @@ bot.on('physicTick', async () => {
 
 } //!
 
+
+startBot()
 // bot.on('chat', (username, message, translate, jsonMsg) => {
 // 	console.log(jsonMsg);
 // 	console.log("message: " + message);
