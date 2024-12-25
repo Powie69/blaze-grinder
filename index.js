@@ -69,6 +69,9 @@ async function setup() {
 	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
 	bot.chat('/fix')
 }
+async function startBot() { //! i dont wanna indent ok?
+
+bot.on('end', () => {setTimeout(() => {startBot()}, process.env.RESTART_DELAY);})
 
 bot.once('spawn', () => {
 	console.log('hello');
@@ -81,6 +84,7 @@ bot.once('spawn', () => {
 
 bot.on('kicked', (e) => {
 	console.log(e);
+	setTimeout(() => {startBot()}, process.env.RESTART_DELAY);
 })
 
 bot.on('entityDead', (entity) => {
@@ -112,6 +116,8 @@ bot.on('physicTick', async () => {
 	}
 	console.log(`hits: ${hits}`);
 })
+
+} //!
 
 // bot.on('chat', (username, message, translate, jsonMsg) => {
 // 	console.log(jsonMsg);
