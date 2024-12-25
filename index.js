@@ -1,7 +1,8 @@
 const mineflayer = require('mineflayer')
 const inventoryViewer = require('mineflayer-web-inventory')
 const radarPlugin = require('mineflayer-radar')(mineflayer);
-const messages = require('./js/messages.js')
+const commands = require('./js/commands.js');
+const messages = require('./js/messages.js');
 require('dotenv').config({path: `.env.${process.env.NODE_ENV || 'development'}`})
 
 const bot = mineflayer.createBot({
@@ -21,11 +22,8 @@ radarPlugin(bot, {
 	port:2510
 });
 
-let isAttacking = false;
-let spawned = false;
-let killed = 0;
-let ticks = 0
-let hits = 0;
+let isAttacking = false, spawned = false;
+let killed=0,ticks=0,hits=0;
 let target = undefined, dead = undefined;
 
 async function attackBlaze(entity) {
@@ -59,8 +57,6 @@ async function sellRods() {
 	};
 	console.log(`sword slot: ${bot.inventory.findItemRange(36,44,843).slot - 36}`);
 	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
-	
-	// console.log(`blaze rod ${ bot.inventory.findItemRange(36,44,994).slot - 35}`);
 }
 
 async function setup() {
@@ -99,7 +95,7 @@ bot.on('entityDead', (entity) => {
 })
 
 bot.on('physicTick', async () => {
-	console.log(ticks);
+	// console.log(ticks);
 	if (isAttacking) return;
 	if (ticks < 12) {
 		ticks++
@@ -110,7 +106,6 @@ bot.on('physicTick', async () => {
 	attackBlaze(target)
 	ticks = 0;
 	if (hits % process.env.MC_INCREMENT === 0 && hits !== 0) {
-		// bot.chat('/heal')
 		await sellRods()
 		setup() // we might die or get trolled or admins
 		console.log("/healed");
@@ -118,6 +113,31 @@ bot.on('physicTick', async () => {
 	console.log(`hits: ${hits}`);
 })
 
+// bot.on('chat', (username, message, translate, jsonMsg) => {
+// 	console.log(jsonMsg);
+// 	console.log("message: " + message);
+// 	console.log("username: " + username);
+// 	console.log("1 ddddddddddddd");
+// 	if (username === bot.username) return;
+// 	console.log("2 dddddddd");
+// 	console.log(username);
+// 	if (!process.env.MC_COMMAND_OWNER.split(',').includes(username)) return;
+// 	console.log("3 dddddddd");
+// 	if (!message.startsWith(process.env.MC_COMMAND_PREFIX)) return;
+// 	console.log("4 dddddddd");
+
+// 	const args = message.split(" ");
+// 	const command = args[0].substring(prefix.length)
+
+// 	console.log(args);
+// 	console.log(command);
+
+// 	if (commands[command]) {
+//         commands[command](bot, username, args); // Pass bot, username, and args
+//     } else {
+// 		console.log(`unkown command: ${command}`);
+//     }
+// })
 // bot.on('playerJoined', (player) => {
 // 	if (!spawned) return;
 // 	if (player.username === process.env.MC_NAME) return;
