@@ -39,7 +39,8 @@ async function sellRods(bot) {
 		return
 	};
 	console.log(`sword slot: ${bot.inventory.findItemRange(36,44,843).slot - 36}`);
-	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
+	// bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
+	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,822).slot - 36) // wooden hoe
 }
 
 async function setup(bot) {
@@ -49,9 +50,12 @@ async function setup(bot) {
 		console.log('sword not found!');
 		return
 	};
-	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
+	// bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
+	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,822).slot - 36) // wooden hoe
+	await bot.waitForTicks(4);
 	bot.chat('/fix')
 }
+
 async function startBot() { //! i dont wanna indent ok?
 	
 const bot = mineflayer.createBot({
@@ -61,7 +65,8 @@ const bot = mineflayer.createBot({
 	username: process.env.MC_NAME,
 	brand: process.env.MC_BRAND
 })
-	
+
+
 try {
 	// inventoryViewer(bot, {
 	// 	port: 2500,
@@ -73,8 +78,6 @@ try {
 } catch (err) {
 	console.log(err);	
 }
-
-console.log();
 
 bot.on('end', () => {setTimeout(() => {startBot()}, process.env.RESTART_DELAY);})
 
@@ -115,7 +118,7 @@ bot.on('physicTick', async () => {
 	ticks = 0;
 	if (hits % process.env.MC_INCREMENT === 0 && hits !== 0) {
 		await sellRods(bot)
-		setup() // we might die or get trolled or admins
+		setup(bot) // we might die or get trolled or admins
 		console.log("/healed");
 	}
 	console.log(`hits: ${hits}`);
@@ -125,45 +128,3 @@ bot.on('physicTick', async () => {
 
 
 startBot()
-// bot.on('chat', (username, message, translate, jsonMsg) => {
-// 	console.log(jsonMsg);
-// 	console.log("message: " + message);
-// 	console.log("username: " + username);
-// 	console.log("1 ddddddddddddd");
-// 	if (username === bot.username) return;
-// 	console.log("2 dddddddd");
-// 	console.log(username);
-// 	if (!process.env.MC_COMMAND_OWNER.split(',').includes(username)) return;
-// 	console.log("3 dddddddd");
-// 	if (!message.startsWith(process.env.MC_COMMAND_PREFIX)) return;
-// 	console.log("4 dddddddd");
-
-// 	const args = message.split(" ");
-// 	const command = args[0].substring(prefix.length)
-
-// 	console.log(args);
-// 	console.log(command);
-
-// 	if (commands[command]) {
-//         commands[command](bot, username, args); // Pass bot, username, and args
-//     } else {
-// 		console.log(`unkown command: ${command}`);
-//     }
-// })
-// bot.on('playerJoined', (player) => {
-// 	if (!spawned) return;
-// 	if (player.username === process.env.MC_NAME) return;
-// 	if (Date.now() - messageCooldownTime < process.env.MESSAGE_COOLDOWN) return;
-
-// 	messageCooldownTime = Date.now()
-// 	console.log( messages.joinMessages[Math.floor(Math.random() * messages.joinMessages.length)].replace(/{USERNAME}/g,player.username) );
-// 	bot.chat(messages.joinMessages[Math.floor(Math.random() * messages.joinMessages.length)].replace(/{USERNAME}/g,player.username))
-// })
-
-// bot.on('playerLeft', (player) => {
-// 	if (Date.now() - messageCooldownTime < process.env.MESSAGE_COOLDOWN) return;
-
-// 	messageCooldownTime = Date.now()
-// 	console.log( messages.leaveMessages[Math.floor(Math.random() * messages.leaveMessages.length)].replace(/{USERNAME}/g,player.username) );
-// 	bot.chat(messages.leaveMessages[Math.floor(Math.random() * messages.leaveMessages.length)].replace(/{USERNAME}/g,player.username))
-// })
