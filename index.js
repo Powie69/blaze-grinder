@@ -39,8 +39,7 @@ async function sellRods(bot) {
 		return
 	};
 	console.log(`sword slot: ${bot.inventory.findItemRange(36,44,843).slot - 36}`);
-	// bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
-	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,822).slot - 36) // wooden hoe
+	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
 }
 
 async function setup(bot) {
@@ -50,8 +49,7 @@ async function setup(bot) {
 		console.log('sword not found!');
 		return
 	};
-	// bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
-	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,822).slot - 36) // wooden hoe
+	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
 	await bot.waitForTicks(4);
 	bot.chat('/fix')
 }
@@ -72,9 +70,9 @@ try {
 	// 	port: 2500,
 	// 	startOnLoad: false,
 	// })
-	radarPlugin(bot, {
-		port:2510
-	});
+	// radarPlugin(bot, {
+	// 	port:2510
+	// });
 } catch (err) {
 	console.log(err);	
 }
@@ -125,6 +123,5 @@ bot.on('physicTick', async () => {
 })
 
 } //!
-
 
 startBot()
