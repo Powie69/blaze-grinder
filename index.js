@@ -1,8 +1,5 @@
 const mineflayer = require('mineflayer')
-const inventoryViewer = require('mineflayer-web-inventory')
-const radarPlugin = require('mineflayer-radar')(mineflayer);
-const commands = require('./js/commands.js');
-const messages = require('./js/messages.js');
+const chalk = require('chalk')
 require('dotenv').config({path: `.env.${process.env.NODE_ENV || 'development'}`})
 
 let isAttacking = false, spawned = false;
@@ -42,6 +39,12 @@ async function sellRods(bot) {
 	bot.setQuickBarSlot(bot.inventory.findItemRange(36,44,843).slot - 36) // sword
 }
 
+function countRods(bot) {
+	const rods = bot.inventory.count(994); // rods
+	// return `${chalk.yellow(rods)} blaze rods found. profit of ${chalk.yellow(rods * 10).toLocaleString()}`
+	return `${chalk.yellow((rods).toLocaleString())} blaze rods found. profit of $${chalk.yellow((rods * 10).toLocaleString())}`;
+}
+
 async function setup(bot) {
 	bot.chat(`/home ${process.env.MC_HOMENAME}`)
 	bot.chat('/heal')
@@ -64,23 +67,10 @@ const bot = mineflayer.createBot({
 	brand: process.env.MC_BRAND
 })
 
-
-try {
-	// inventoryViewer(bot, {
-	// 	port: 2500,
-	// 	startOnLoad: false,
-	// })
-	// radarPlugin(bot, {
-	// 	port:2510
-	// });
-} catch (err) {
-	console.log(err);	
-}
-
 bot.on('end', () => {setTimeout(() => {startBot()}, process.env.RESTART_DELAY);})
 
 bot.once('spawn', () => {
-	console.log('hello');
+	console.log(`Bot connected to ${chalk.green(`${process.env.host}:${process.env.port}`)} with username: ${chalk.blue(process.env.MC_NAME)}`);
 	bot.chat(`/login ${process.env.LOGIN_PASSWORD}`)
 	bot.mcData = require('minecraft-data')(bot.version)
 	setup(bot)
@@ -97,7 +87,7 @@ bot.on('entityDead', (entity) => {
 	if (entity.name !== 'blaze') return;
 	killed++
 	if (entity.id !== target.id) return; // dont bother with other dead entities
-	console.log(`dead ${target.id}`);
+	// console.log(`dead ${target.id}`);
 	console.log(`killed: ${killed}`);
 	dead = entity.id;
 	target = null;
@@ -115,9 +105,9 @@ bot.on('physicTick', async () => {
 	attackBlaze(bot, target)
 	ticks = 0;
 	if (hits % process.env.MC_INCREMENT === 0 && hits !== 0) {
+		console.log(countRods(bot));
 		await sellRods(bot)
 		setup(bot) // we might die or get trolled or admins
-		console.log("/healed");
 	}
 	console.log(`hits: ${hits}`);
 })
