@@ -1,4 +1,6 @@
 const mineflayer = require('mineflayer');
+const radarPlugin = require('mineflayer-radar')(mineflayer);
+const inventoryViewer = require('mineflayer-web-inventory');
 const chalk = require('chalk');
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
 
@@ -24,6 +26,9 @@ class BlazeBot {
 			username: process.env.MC_NAME,
 			brand: process.env.MC_BRAND
 		});
+
+		radarPlugin(this.bot, { host: '0.0.0.0', port: 6969 });
+		inventoryViewer(this.bot, { port: 6069, });
 
 		this.bot.once('spawn', () => this.onSpawn());
 		this.bot.on('end', () => this.restartBot());
